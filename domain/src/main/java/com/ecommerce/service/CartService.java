@@ -4,10 +4,11 @@ package com.ecommerce.service;
 import com.ecommerce.model.cart.Cart;
 import com.ecommerce.model.cart.CartItem;
 import com.ecommerce.model.user.User;
+import com.ecommerce.port.adapters.repositories.CartRepositoryPort;
 import com.ecommerce.port.drivers.CartDriverPort;
-import com.ecommerce.port.repositories.CartRepositoryPort;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CartService implements CartDriverPort {
@@ -21,20 +22,23 @@ public class CartService implements CartDriverPort {
     }
 
     @Override
-    public Cart getCartFromDB() {
-        User user = userService.getUser();
-        return cartRepository.findCartByUserId(user.getId())
-                .orElseGet(Cart::new);
+    public Optional<Cart> getcartfromdb() {
+        User user = userService.getAuthenticatedUser();
+        return cartRepository.findCartByUserId(user.getId());
     }
 
     @Override
     public void saveCart(Cart cart) {
-        Cart cartFromDB = getCartFromDB();
-        updateCartFromDB(cartFromDB, cart);
-        cartRepository.save(cartFromDB);
+        Cart cartToBeUpdated = getCartFromDbOrCreateIfNotPresent();
+        updateCart(cartToBeUpdated, cart);
+        cartRepository.save(cartToBeUpdated);
     }
 
-    private void updateCartFromDB(Cart cartFromDB, Cart cart) {
+    private Cart getCartFromDbOrCreateIfNotPresent() {
+        return getcartfromdb().orElseGet(Cart::new);
+    }
+
+    private void updateCart(Cart cartFromDB, Cart cart) {
         Map<Long, CartItem> cartItemMap = getCartItemsMap(cart);
 
         clearItemsThatAreNoLongerPresentInTheNewCart(cartFromDB, cartItemMap);

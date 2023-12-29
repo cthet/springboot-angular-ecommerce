@@ -1,8 +1,13 @@
 package com.ecommerce.model.auth;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class UserDto {
 
     private Long id;

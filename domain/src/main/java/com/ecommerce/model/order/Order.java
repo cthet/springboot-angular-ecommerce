@@ -1,12 +1,17 @@
 package com.ecommerce.model.order;
 
 import com.ecommerce.model.address.Address;
+import com.ecommerce.model.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class Order {
 
     private Long id;
@@ -21,6 +26,8 @@ public class Order {
     private int totalQuantity;
 
     private BigDecimal totalPrice;
+
+    private User user;
 
     public List<OrderItem> getOrderItems() {
         return Collections.unmodifiableList(orderItems);

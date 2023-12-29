@@ -1,5 +1,10 @@
 package com.ecommerce.model.category;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BrandCategory {
 
     private int id;
@@ -10,11 +15,4 @@ public class BrandCategory {
 
     private String description;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }

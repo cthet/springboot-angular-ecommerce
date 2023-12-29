@@ -2,9 +2,11 @@ package com.ecommerce.port.drivers;
 
 import com.ecommerce.model.cart.Cart;
 
+import java.util.Optional;
+
 public interface CartDriverPort {
 
-    Cart getCartFromDB();
+    Optional<Cart> getcartfromdb();
 
     void saveCart(Cart cart);
 }

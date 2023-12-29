@@ -3,21 +3,20 @@ package com.ecommerce.model.product;
 import com.ecommerce.model.category.ApparelCategory;
 import com.ecommerce.model.category.BrandCategory;
 import com.ecommerce.model.category.GenderCategory;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@Getter
+@Setter
 public class Product {
 
     private Long id;
-
     private String productName;
-
     private BigDecimal unitPrice;
-
     private String imageUrl;
-
     private Boolean active;
-
     private int unitsInStocks;
 
     private GenderCategory genderCategory;
@@ -25,7 +24,6 @@ public class Product {
     private BrandCategory brandCategory;
 
     private ApparelCategory apparelCategory;
-
 
     public Product(Long id, String productName, BigDecimal unitPrice, String imageUrl, Boolean active, int unitsInStocks) {
         this.id = id;
@@ -36,20 +34,4 @@ public class Product {
         this.unitsInStocks = unitsInStocks;
     }
 
-    public void setGenderCategory(GenderCategory genderCategory) {
-        this.genderCategory = genderCategory;
-    }
-
-    public void setBrandCategory(BrandCategory brandCategory) {
-        this.brandCategory = brandCategory;
-    }
-
-    public void setApparelCategory(ApparelCategory apparelCategory) {
-        this.apparelCategory = apparelCategory;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
 }

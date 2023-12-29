@@ -1,13 +1,12 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.ApparelCategoriesNotFound;
-import com.ecommerce.exception.GenderNotFound;
 import com.ecommerce.model.category.ApparelCategoriesResponse;
 import com.ecommerce.model.category.ApparelCategory;
 import com.ecommerce.model.category.GenderCategory;
+import com.ecommerce.port.adapters.repositories.ApparelCategoryRepositoryPort;
+import com.ecommerce.port.adapters.repositories.GenderCategoryRepositoryPort;
 import com.ecommerce.port.drivers.ApparelCategoryDriverPort;
-import com.ecommerce.port.repositories.ApparelCategoryRepositoryPort;
-import com.ecommerce.port.repositories.GenderCategoryRepositoryPort;
 import com.ecommerce.util.message.ErrorMessages;
 
 import java.util.List;
@@ -37,8 +36,7 @@ public class ApparelCategoryService implements ApparelCategoryDriverPort {
     }
 
     private GenderCategory checkGender(int genderId) {
-        GenderCategory gender = genderCategoryRepository.findById(genderId)
-                .orElseThrow(() -> new GenderNotFound(ErrorMessages.GENDER_NOT_FOUND, genderId));
+        GenderCategory gender = genderCategoryRepository.findById(genderId);
         return gender;
     }
 

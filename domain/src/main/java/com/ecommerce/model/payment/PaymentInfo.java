@@ -1,5 +1,10 @@
 package com.ecommerce.model.payment;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PaymentInfo {
 
     private Long amount;
@@ -7,11 +12,4 @@ public class PaymentInfo {
     private String currency;
 
 
-    public Long getAmount() {
-        return amount;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
 }

@@ -1,10 +1,14 @@
 package com.ecommerce.model.category;
 
 import com.ecommerce.model.product.Product;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
+@Setter
 public class GenderCategory {
 
     private int id;
@@ -20,7 +24,5 @@ public class GenderCategory {
     private Set<BrandCategory> brandCategories = new HashSet<>();
 
 
-    public String getName() {
-        return name;
-    }
+
 }

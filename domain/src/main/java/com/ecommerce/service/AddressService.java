@@ -1,15 +1,15 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.AddressAlreadyExists;
-import com.ecommerce.exception.AddressNotFound;
 import com.ecommerce.exception.CheckingUserAddressFailed;
 import com.ecommerce.model.address.Address;
 import com.ecommerce.model.address.AddressResponse;
 import com.ecommerce.model.user.User;
+import com.ecommerce.port.adapters.gateway.AuthenticationGateway;
+import com.ecommerce.port.adapters.repositories.AddressRepositoryPort;
+import com.ecommerce.port.adapters.repositories.CivilityRepositoryPort;
+import com.ecommerce.port.adapters.repositories.CountryRepositoryPort;
 import com.ecommerce.port.drivers.AddressDriverPort;
-import com.ecommerce.port.repositories.AddressRepositoryPort;
-import com.ecommerce.port.repositories.CivilityRepositoryPort;
-import com.ecommerce.port.repositories.CountryRepositoryPort;
 import com.ecommerce.util.message.ErrorMessages;
 
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import java.util.List;
 
 public class AddressService implements AddressDriverPort {
 
-    private final UserService userService;
+    private final AuthenticationGateway authenticationGateway;
     private final AddressRepositoryPort addressRepository;
     private final CountryRepositoryPort countryRepository;
     private final CivilityRepositoryPort civilityRepository;
 
-    public AddressService(UserService userService, AddressRepositoryPort addressRepository, CountryRepositoryPort countryRepository, CivilityRepositoryPort civilityRepository) {
-        this.userService = userService;
+    public AddressService(UserService userService, AuthenticationGateway authenticationGateway, AddressRepositoryPort addressRepository, CountryRepositoryPort countryRepository, CivilityRepositoryPort civilityRepository) {
+        this.authenticationGateway = authenticationGateway;
         this.addressRepository = addressRepository;
         this.countryRepository = countryRepository;
         this.civilityRepository = civilityRepository;
@@ -31,8 +31,7 @@ public class AddressService implements AddressDriverPort {
 
     @Override
     public Address fetchAddress(Long id) {
-        return addressRepository.findById(id)
-                .orElseThrow(() -> new AddressNotFound(ErrorMessages.ADDRESS_NOT_FOUND));
+        return addressRepository.findById(id);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class AddressService implements AddressDriverPort {
 
     @Override
     public AddressResponse getUserAddress() {
-        User user = userService.getUser();
+        User user = authenticationGateway.getAuthenticatedUser();
         List<Address> addresses = addressRepository.findByUserId(user.getId());
 
         if (addresses.isEmpty()) {
@@ -69,12 +68,12 @@ public class AddressService implements AddressDriverPort {
     }
 
     private void checkAddressExistence(Long id) {
-        addressRepository.findById(id).ifPresent(s -> {
+        if(addressRepository.findById(id) != null) {
             throw new AddressAlreadyExists(ErrorMessages.ADDRESS_ALREADY_EXISTS);
-        });
+        };
     }
     private void checkUserAddress(Address address){
-        User user = userService.getUser();
+        User user = authenticationGateway.getAuthenticatedUser();
         if(user != address.getUser()){
             throw new CheckingUserAddressFailed(ErrorMessages.CHECKING_USER_ADDRESS_FAILED);
         }

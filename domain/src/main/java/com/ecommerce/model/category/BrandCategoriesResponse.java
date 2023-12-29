@@ -2,8 +2,13 @@ package com.ecommerce.model.category;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class BrandCategoriesResponse {
 
     private String gender;

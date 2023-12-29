@@ -3,8 +3,7 @@ package com.ecommerce.service;
 
 import com.ecommerce.model.payment.PaymentInfo;
 import com.ecommerce.port.drivers.CheckoutDriverPort;
-import com.ecommerce.port.repositories.UserRepositoryPort;
-import com.ecommerce.security.UserDetailsServiceImpl;
+import com.ecommerce.port.adapters.repositories.UserRepositoryPort;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -13,12 +12,10 @@ import com.stripe.param.PaymentIntentCreateParams;
 public class CheckoutService implements CheckoutDriverPort {
 
     private final UserRepositoryPort userRepository;
-    private final UserDetailsServiceImpl userPrincipalService;
     private final String secretKey;
 
-    public CheckoutService(UserRepositoryPort userRepository, UserDetailsServiceImpl userPrincipalService, String secretKey) {
+    public CheckoutService(UserRepositoryPort userRepository, String secretKey) {
         this.userRepository = userRepository;
-        this.userPrincipalService = userPrincipalService;
         this.secretKey = secretKey;
     }
 

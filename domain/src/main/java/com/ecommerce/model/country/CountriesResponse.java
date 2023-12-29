@@ -1,9 +1,13 @@
 package com.ecommerce.model.country;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
-
+@Getter
+@Setter
 public class CountriesResponse {
 
 

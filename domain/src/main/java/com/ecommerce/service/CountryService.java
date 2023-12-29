@@ -4,7 +4,7 @@ package com.ecommerce.service;
 import com.ecommerce.model.country.CountriesResponse;
 import com.ecommerce.model.country.Country;
 import com.ecommerce.port.drivers.CountryDriverPort;
-import com.ecommerce.port.repositories.CountryRepositoryPort;
+import com.ecommerce.port.adapters.repositories.CountryRepositoryPort;
 
 import java.util.List;
 

@@ -1,5 +1,10 @@
 package com.ecommerce.model.category;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BrandCategoryImage {
 
     private int id;
@@ -11,7 +16,4 @@ public class BrandCategoryImage {
     private GenderCategory genderCategory;
 
 
-    public String getImage_url() {
-        return image_url;
-    }
 }

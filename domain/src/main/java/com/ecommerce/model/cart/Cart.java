@@ -1,11 +1,17 @@
 package com.ecommerce.model.cart;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
+@Setter
 public class Cart {
+    Long id;
 
     List<CartItem> cartItems = new ArrayList<>();
 
@@ -50,4 +56,9 @@ public class Cart {
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
+

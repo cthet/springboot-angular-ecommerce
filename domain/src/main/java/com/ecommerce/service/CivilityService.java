@@ -1,10 +1,8 @@
 package com.ecommerce.service;
 
-import com.ecommerce.exception.CivilityNotFound;
 import com.ecommerce.model.user.Civility;
 import com.ecommerce.port.drivers.CivilityDriverPort;
-import com.ecommerce.port.repositories.CivilityRepositoryPort;
-import com.ecommerce.util.message.ErrorMessages;
+import com.ecommerce.port.adapters.repositories.CivilityRepositoryPort;
 
 public class CivilityService implements CivilityDriverPort {
 
@@ -16,7 +14,6 @@ public class CivilityService implements CivilityDriverPort {
 
     @Override
     public Civility getCivilityById(int id) {
-        return civilityRepository.findCivilityById(id)
-                .orElseThrow(()-> new CivilityNotFound(ErrorMessages.CIVILITY_NOT_FOUND));
+        return civilityRepository.findCivilityById(id);
     }
 }

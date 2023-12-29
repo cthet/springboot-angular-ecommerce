@@ -2,10 +2,15 @@ package com.ecommerce.model.cart;
 
 import com.ecommerce.model.product.Product;
 import com.ecommerce.model.user.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@Getter
+@Setter
 public class CartItem {
+    private Long id;
 
     private int quantity;
 
@@ -42,5 +47,13 @@ public class CartItem {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

@@ -1,11 +1,10 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.ErrorInRequest;
-import com.ecommerce.exception.ProductNotFound;
 import com.ecommerce.model.product.Product;
 import com.ecommerce.model.product.ProductsResponse;
 import com.ecommerce.port.drivers.ProductDriverPort;
-import com.ecommerce.port.repositories.ProductRepositoryPort;
+import com.ecommerce.port.adapters.repositories.ProductRepositoryPort;
 import com.ecommerce.util.message.ErrorMessages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,8 +24,7 @@ public class ProductService implements ProductDriverPort {
 
     @Override
     public Product getProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFound(ErrorMessages.PRODUCT_NOT_FOUND));
+        return productRepository.findById(productId);
     }
 
     @Override
@@ -36,7 +34,6 @@ public class ProductService implements ProductDriverPort {
 
         return constructProductsResponse(pageProduct);
     }
-
 
     @Override
     public ProductsResponse getNewProducts(int gender, int page, int size) {

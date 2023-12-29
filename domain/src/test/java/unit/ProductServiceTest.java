@@ -5,7 +5,7 @@ import com.ecommerce.exception.ErrorInRequest;
 import com.ecommerce.exception.ProductNotFound;
 import com.ecommerce.model.product.Product;
 import com.ecommerce.model.product.ProductsResponse;
-import com.ecommerce.port.repositories.ProductRepositoryPort;
+import com.ecommerce.port.adapters.repositories.ProductRepositoryPort;
 import com.ecommerce.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class ProductServiceTest {
     void givenProductId_whenProductExists_thenProductIsReturned() {
         Long productId = 1L;
         Product mockProduct = new Product(1L, "product_name", new BigDecimal("1000"), "productImageUrl", true, 100);
-        when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
+        when(productRepository.findById(productId)).thenReturn(mockProduct);
 
         ProductService productService = new ProductService(productRepository);
         Product result = productService.getProductById(productId);
@@ -53,7 +53,7 @@ public class ProductServiceTest {
     @DisplayName("getProductById throws ProductNotFound when product is not found")
     void givenProductId_whenProductDoesNotExist_thenThrowProductNotFound() {
         Long productId = 99L;
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(null);
 
         ProductService productService = new ProductService(productRepository);
 

@@ -1,5 +1,10 @@
 package com.ecommerce.model.user;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Civility {
 
     private int id;
@@ -11,5 +16,8 @@ public class Civility {
         this.name = name;
     }
 
+    public Civility() {
+
+    }
 
 }
