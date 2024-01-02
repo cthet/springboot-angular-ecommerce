@@ -1,0 +1,12 @@
+# Docker
+docker-compose.yml
+.dockerignore
+
+# Ignore git related files
+.gitignore
+
+# Database
+db/
+
+images/
+README.md
