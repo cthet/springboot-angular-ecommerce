@@ -1,80 +1,64 @@
-//package unit;
-//
-//import com.ecommerce.springbootecommerce.Exception.ApiRequestException;
-//import com.ecommerce.springbootecommerce.domain.User;
-//import com.ecommerce.springbootecommerce.enums.Role;
-//import com.ecommerce.springbootecommerce.mappers.UserMapper;
-//import com.ecommerce.springbootecommerce.repository.UserRepository;
-//import com.ecommerce.springbootecommerce.security.UserDetailsImpl;
-//import com.ecommerce.springbootecommerce.security.UserDetailsServiceImpl;
-//import com.ecommerce.springbootecommerce.service.Impl.UserServiceImpl;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//
-//import java.util.Optional;
-//import java.util.Set;
-//
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.BDDMockito.given;
-//import static org.mockito.Mockito.verify;
-//
-////@ExtendWith(SpringExtension.class)
-//public class UserServiceTest {
-//
-//
-//    @Autowired
-//    private UserServiceImpl userService;
-//
-//    @MockBean
-//    private UserRepository userRepository;
-//
-//    @MockBean
-//    private UserDetailsServiceImpl userDetailsService;
-//
-//    @MockBean
-//    private UserMapper userMapper;
-//
-//    private User testUser;
-//    private UserDetailsImpl userDetailsImpl;
-//
-//    @BeforeEach
-//    void setUp() {
-//        testUser = new User();
-//        testUser.setId(1L);
-//        testUser.setFirstName("John");
-//        testUser.setLastName("Doe");
-//        testUser.setRole(Set.of(Role.USER));
-//
-//        userDetailsImpl = UserDetailsImpl.build(testUser);
-//    }
-//
-//    @Test
-//    @DisplayName("Test getUser - Success")
-//    void testGetUser() {
-//
-//        given(userRepository.findById(testUser.getId())).willReturn(Optional.of(testUser));
-//        given(userDetailsService.getUserPrincipalImpl()).willReturn(userDetailsImpl);
-//
-//        User actualUser = userService.getUser();
-//
-//        assertEquals(testUser, actualUser);
-//    }
-//
-//    @Test
-//    @DisplayName("Test getUser - Failure")
-//    void testGetUserFailure() {
-//        given(userDetailsService.getUserPrincipalImpl()).willReturn(userDetailsImpl);
-//        given(userRepository.findById(testUser.getId())).willReturn(Optional.empty());
-//
-//        assertThrows(ApiRequestException.class, () -> userService.getUser());
-//
-//        verify(userDetailsService).getUserPrincipalImpl();
-//        verify(userRepository).findById(testUser.getId());
-//    }
-//}
+package unit;
+
+import com.ecommerce.domain.model.user.*;
+import com.ecommerce.domain.port.adapters.gateway.AuthenticationGateway;
+import com.ecommerce.domain.port.adapters.repositories.UserRepositoryPort;
+import com.ecommerce.domain.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class UserServiceTest {
+
+    private UserService userService;
+
+    @Mock
+    private UserRepositoryPort userRepository;
+
+    @Mock
+    private AuthenticationGateway authenticationGateway;
+
+    @BeforeEach
+    void setup(){
+        userService = new UserService(userRepository, authenticationGateway);
+    }
+
+    @Test
+    public void whenUpdateUserInfo_thenUserInfoIsUpdated() {
+        Civility civility = new Civility(1, "Mr");
+        User authenticatedUser = new User();
+        Info info = new Info(civility, "John", "Doe");
+        authenticatedUser.setFirstName(info.getFirstName());
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(userRepository.save(authenticatedUser)).thenReturn(authenticatedUser);
+
+        Profile updatedProfile = userService.updateUserInfo(info);
+
+        assertNotNull(updatedProfile);
+        assertEquals(info.getFirstName(), updatedProfile.getInfo().getFirstName());
+        assertEquals(info.getLastName(), updatedProfile.getInfo().getLastName());
+        assertEquals(info.getCivility(), updatedProfile.getInfo().getCivility());
+    }
+
+    @Test
+    public void whenUpdateUserEmail_thenEmailIsUpdated() {
+        User authenticatedUser = new User();
+        Email email = new Email("john.doe@example.com");
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(userRepository.save(any(User.class))).thenReturn(authenticatedUser);
+
+        Profile updatedProfile = userService.updateUserEmail(email);
+
+        assertNotNull(updatedProfile);
+        assertEquals(email.getEmail(), updatedProfile.getEmail().getEmail());
+    }
+}

@@ -1,332 +1,180 @@
-//package unit;
-//
-//
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.beans.factory.annotation.Autowired;
-//
-//import org.springframework.http.HttpStatus;
-//
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//import java.util.Set;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.BDDMockito.given;
-//import static org.mockito.Mockito.*;
-//
-////@ExtendWith(MockitoExtension.class)
-//public class AddressServiceTest {
-//
-//
-//    @MockBean
-//    private AddressRepository addressRepository;
-//
-//    @MockBean
-//    private CivilityRepository civilityRepository;
-//
-//    @MockBean
-//    private CountryRepository countryRepository;
-//
-//    @MockBean
-//    private UserRepository userRepository;
-//
-//    @MockBean
-//    private AddressMapper addressMapper;
-//
-//    @MockBean
-//    private UserServiceImpl userService;
-//
-//    @MockBean
-//    private UserDetailsServiceImpl userDetailsService;
-//
-//    @MockBean
-//    private UserMapper userMapper;
-//
-//    @Autowired
-//    private AddressService addressService;
-//
-//    private CivilityDto testCivilityDto;
-//    private CountryDto testCountryDto;
-//    private AddressDto testAddressDto;
-//
-//    private Civility testCivility;
-//    private Country testCountry;
-//    private Address testAddress;
-//
-//    private User testUser;
-//    private User testDifferentUser;
-//    private UserDetailsImpl userDetailsImpl;
-//
-//
-//
-//    @BeforeEach
-//    void setUp() {
-//        testCivility = new Civility();
-//        testCivility.setId(1);
-//        testCivility.setName("homme");
-//
-//        testCountry = new Country();
-//        testCountry.setId(1);
-//        testCountry.setName("France");
-//        testCountry.setCode("FR");
-//
-//        testUser = new User();
-//        testUser.setId(1L);
-//        testUser.setFirstName("John");
-//        testUser.setLastName("Doe");
-//        testUser.setRole(Set.of(Role.USER));
-//
-//        testDifferentUser = new User();
-//        testDifferentUser.setId(2L);
-//        testDifferentUser.setFirstName("John");
-//        testDifferentUser.setLastName("Doe");
-//        testDifferentUser.setRole(Set.of(Role.USER));
-//
-//        userDetailsImpl = UserDetailsImpl.build(testUser);
-//
-//        Authentication auth = new UsernamePasswordAuthenticationToken(userDetailsImpl, null, userDetailsImpl.getAuthorities());
-//        SecurityContextHolder.getContext().setAuthentication(auth);
-//
-//
-//        testAddress = new Address();
-//        testAddress.setId(1L);
-//        testAddress.setCivility(testCivility);
-//        testAddress.setFirstName("John");
-//        testAddress.setLastName("Doe");
-//        testAddress.setStreet("123 Main Street");
-//        testAddress.setAddressComplement("Apartment 4B");
-//        testAddress.setPostCode(12345);
-//        testAddress.setCity("Paris");
-//        testAddress.setCountry(testCountry);
-//        testAddress.setPhoneNumber("0123456789");
-//        testAddress.setUser(testUser);
-//
-//        testCivilityDto = new CivilityDto(1, "homme");
-//        testCountryDto = new CountryDto(1, "France", "FR");
-//        testAddressDto = new AddressDto(1L, testCivilityDto, "John", "Doe","123 Main Street", "Apartment 4B", 12345, "Paris", testCountryDto, "0123456789");
-//
-//    }
-//
-//    @Test
-//    @DisplayName("Test saveAddress - Success")
-//    void testSaveAddressSuccess() throws Exception {
-//        given(addressRepository.findById(testAddressDto.getId())).willReturn(Optional.empty());
-//        given(addressMapper.addressDtoToAddress(testAddressDto)).willReturn(testAddress);
-//        given(addressMapper.addressToAddressDto(testAddress)).willReturn(testAddressDto);
-//
-//        given(civilityRepository.findCivilityById(testAddressDto.getCivilityDto().getId())).willReturn(Optional.of(testCivility));
-//        given(countryRepository.findById(testAddressDto.getCountryDto().getId())).willReturn(Optional.of(testCountry));
-//
-//        given(userRepository.findById(testUser.getId())).willReturn(Optional.of(testUser));
-//        given(userDetailsService.getUserPrincipalImpl()).willReturn(userDetailsImpl);
-//        given(userService.getUser()).willReturn(testUser);
-//
-//        given(addressRepository.save(testAddress)).willReturn(testAddress);
-//
-//
-//        AddressDto addressDto = addressService.saveAddress(testAddressDto);
-//
-//        assertEquals(testAddressDto, addressDto);
-//    }
-//
-//    @Test
-//    @DisplayName("Test saveAddress - Failure - Address already exists")
-//    void testSaveAddressFailureAddressExists() {
-//        given(addressRepository.findById(any())).willReturn(Optional.of(testAddress));
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.saveAddress(testAddressDto));
-//
-//        assertEquals("Address already exists !", exception.getMessage());
-//        assertEquals(HttpStatus.CONFLICT, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test saveAddress - Failure - Civility not found")
-//    void testSaveAddressFailureCivilityNotFound() {
-//        given(addressRepository.findById(testAddressDto.getId())).willReturn(Optional.empty());
-//        given(addressMapper.addressDtoToAddress(testAddressDto)).willReturn(testAddress);
-//        given(civilityRepository.findCivilityById(testAddressDto.getCivilityDto().getId())).willReturn(Optional.empty());
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.saveAddress(testAddressDto));
-//
-//        assertEquals("Civility not found", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test saveAddress - Failure - Country not found")
-//    void testSaveAddressFailureCountryNotFound() {
-//        given(addressRepository.findById(testAddress.getId())).willReturn(Optional.empty());
-//        given(addressMapper.addressDtoToAddress(testAddressDto)).willReturn(testAddress);
-//        given(civilityRepository.findCivilityById(testAddressDto.getCivilityDto().getId())).willReturn(Optional.of(testCivility));
-//        given(countryRepository.findById(testAddressDto.getCountryDto().getId())).willReturn(Optional.empty());
-//
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.saveAddress(testAddressDto));
-//
-//        assertEquals("Country not found", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test updateAddress - Failure - Address not found")
-//    void testUpdateAddressFailureAddressNotFound() {
-//        given(addressRepository.findById(testAddressDto.getId())).willReturn(Optional.empty());
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.updateAddress(1L, testAddressDto));
-//
-//        assertEquals("Address not found !", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test updateAddress - Failure - Check User Address failed")
-//    void testUpdateAddressFailureCheckUserAddress() {
-//        given(userService.getUser()).willReturn(testUser);
-//        testAddress.setUser(testDifferentUser);
-//        given(addressRepository.findById(testAddressDto.getId())).willReturn(Optional.of(testAddress));
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.updateAddress(1L, testAddressDto));
-//
-//        assertEquals("Check User Address failed", exception.getMessage());
-//        assertEquals(HttpStatus.FORBIDDEN, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test updateAddress - Failure - Civility not found")
-//    void testUpdateAddressFailureCivilityNotFound() {
-//        given(addressRepository.findById(testAddress.getId())).willReturn(Optional.empty());
-//        given(addressMapper.addressDtoToAddress(testAddressDto)).willReturn(testAddress);
-//        given(civilityRepository.findCivilityById(testCivility.getId())).willReturn(Optional.empty());
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.saveAddress(testAddressDto));
-//
-//        assertEquals("Civility not found", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test updateAddress - Failure - Country not found")
-//    void testUpdateAddressFailureCountryNotFound() {
-//        given(addressRepository.findById(testAddress.getId())).willReturn(Optional.empty());
-//        given(addressMapper.addressDtoToAddress(testAddressDto)).willReturn(testAddress);
-//        given(civilityRepository.findCivilityById(testCivility.getId())).willReturn(Optional.of(testCivility));
-//        given(countryRepository.findById(any())).willReturn(Optional.empty());
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.saveAddress(testAddressDto));
-//
-//        assertEquals("Country not found", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test updateAddress - Success")
-//    void testUpdateAddressSuccess() {
-//        given(addressRepository.findById(testAddressDto.getId())).willReturn(Optional.of(testAddress));
-//        given(userService.getUser()).willReturn(testUser);
-//        given(civilityRepository.findCivilityById(testCivility.getId())).willReturn(Optional.of(testCivility));
-//        given(countryRepository.findById(any())).willReturn(Optional.of(testCountry));
-//        given(addressRepository.save(testAddress)).willReturn(testAddress);
-//
-//        given(addressMapper.addressToAddressDto(testAddress)).willReturn(testAddressDto);
-//
-//        AddressDto addressDto = addressService.updateAddress(1L, testAddressDto);
-//
-//        assertEquals(addressDto, testAddressDto);
-//    }
-//
-//    @Test
-//    @DisplayName("Test fetchAddressDTO - Success")
-//    void testFetchAddressDtoSuccess() {
-//        given(addressRepository.findById(1L)).willReturn(Optional.of(testAddress));
-//        given(addressMapper.addressToAddressDto(testAddress)).willReturn(testAddressDto);
-//
-//        AddressDto addressDto = addressService.fetchAddressDTO(1L);
-//
-//        assertEquals(addressDto, testAddressDto);
-//    }
-//
-//    @Test
-//    @DisplayName("Test fetchAddressDTO - Failure")
-//    void testFetchAddressDtoFailure() {
-//        given(addressRepository.findById(1L)).willReturn(Optional.empty());
-//
-//        Exception exception = assertThrows(ApiRequestException.class, () -> addressService.fetchAddressDTO(1L));
-//
-//        assertEquals("Address not found !", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, ((ApiRequestException)exception).getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test getUserAddress - Success")
-//    void testGetUserAddressSuccess() {
-//        given(userService.getUser()).willReturn(testUser);
-//        given(addressRepository.findByUserId(testUser.getId())).willReturn(List.of(testAddress));
-//        given(addressMapper.addressesToAddressesDto(List.of(testAddress))).willReturn(List.of(testAddressDto));
-//
-//        AddressResponse addressResponse = addressService.getUserAddress();
-//
-//        assertEquals(addressResponse.getAddresses(), List.of(testAddressDto));
-//    }
-//
-//    @Test
-//    @DisplayName("Test getUserAddress - Empty")
-//    void testGetUserAddressEmpty() {
-//        given(userService.getUser()).willReturn(testUser);
-//        given(addressRepository.findByUserId(testUser.getId())).willReturn(Collections.emptyList());
-//
-//        AddressResponse addressResponse = addressService.getUserAddress();
-//
-//        assertEquals(addressResponse.getAddresses(), Collections.emptyList());
-//    }
-//
-//    @Test
-//    @DisplayName("Test deleteAddress - Success")
-//    void testDeleteAddress() {
-//        given(addressRepository.findById(1L)).willReturn(Optional.of(testAddress));
-//        given(userService.getUser()).willReturn(testUser);
-//
-//        addressService.deleteAddress(1L);
-//
-//        verify(addressRepository, times(1)).deleteById(testAddress.getId());
-//    }
-//
-//    @Test
-//    @DisplayName("Test deleteAddress - Failure - Check User Address failed")
-//    void testDeleteAddressFailureCheckUser() {
-//        given(addressRepository.findById(1L)).willReturn(Optional.of(testAddress));
-//        given(userService.getUser()).willReturn(testDifferentUser);
-//
-//        ApiRequestException exception = assertThrows(ApiRequestException.class,
-//                () -> addressService.deleteAddress(1L));
-//
-//        assertEquals("Check User Address failed", exception.getMessage());
-//        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
-//
-//        verify(addressRepository, never()).deleteById(testAddress.getId());
-//    }
-//
-//    @Test
-//    @DisplayName("Test deleteAddress - Failure - Address not found")
-//    void testDeleteAddressFailureNotFound() {
-//        given(addressRepository.findById(1L)).willReturn(Optional.empty());
-//
-//        ApiRequestException exception = assertThrows(ApiRequestException.class,
-//                () -> addressService.deleteAddress(1L));
-//
-//        assertEquals("Address not found !", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-//
-//        verify(addressRepository, never()).deleteById(testAddress.getId());
-//    }
-//
-//
-//
-//}
+package unit;
+
+import com.ecommerce.domain.exception.AddressAlreadyExists;
+import com.ecommerce.domain.exception.CheckingUserAddressFailed;
+import com.ecommerce.domain.model.address.Address;
+import com.ecommerce.domain.model.country.Country;
+import com.ecommerce.domain.model.user.Civility;
+import com.ecommerce.domain.model.user.User;
+import com.ecommerce.domain.port.adapters.gateway.AuthenticationGateway;
+import com.ecommerce.domain.port.adapters.repositories.AddressRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.CivilityRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.CountryRepositoryPort;
+import com.ecommerce.domain.port.drivers.AddressDriverPort;
+import com.ecommerce.domain.service.AddressService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class AddressServiceTest {
+
+    private AddressDriverPort addressService;
+    @Mock
+    private AuthenticationGateway authenticationGateway;
+    @Mock
+    private AddressRepositoryPort addressRepository;
+    @Mock
+    private CountryRepositoryPort countryRepository;
+    @Mock
+    private CivilityRepositoryPort civilityRepository;
+
+    @BeforeEach
+    void setup() {
+        addressService = new AddressService(authenticationGateway, addressRepository, countryRepository, civilityRepository);
+    }
+
+    @Test
+    @DisplayName("Test saveAddress - Failure - Address already exists")
+    void givenExistingAddress_whenSavingAddress_thenThrowException() {
+        Long addressId = 1L;
+        Address existingAddress = new Address();
+        existingAddress.setId(addressId);
+
+        when(addressRepository.findById(addressId)).thenReturn(existingAddress);
+
+        assertThrows(AddressAlreadyExists.class, () -> addressService.saveAddress(existingAddress));
+    }
+
+    @Test
+    @DisplayName("Test saveAddress - Success")
+    void givenNewAddressWithDetails_whenSavingAddress_thenAddressIsSaved() {
+        Long AddressId = 1L;
+        Country mockCountry = new Country(1, "France", "FR");
+        Civility mockCivility = new Civility(1, "M");
+        Address newAddress = new Address(AddressId, mockCivility, "John", "Doe", "123 Main Street", mockCountry);
+
+        when(addressRepository.findById(AddressId)).thenReturn(null);
+        when(addressRepository.save(newAddress)).thenReturn(newAddress);
+
+        Address result = addressService.saveAddress(newAddress);
+
+        verify(addressRepository).save(newAddress);
+        assertEquals(newAddress, result);
+    }
+
+
+    @Test
+    @DisplayName("Test updatingAddress - Success")
+    void givenExistingAddressAndUserMatch_whenUpdatingAddress_thenAddressIsUpdated() {
+        Long addressId = 1L;
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+        Address existingAddress = new Address();
+        existingAddress.setId(addressId);
+        existingAddress.setUser(authenticatedUser);
+
+        Country mockCountry = new Country(1, "France", "FR");
+        Civility mockCivility = new Civility(1, "M");
+        Address addressToUpdate = new Address(addressId, mockCivility, "John", "Doe", "123 Main Street", mockCountry);
+
+        when(addressRepository.findById(addressId)).thenReturn(existingAddress);
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.save(addressToUpdate)).thenReturn(addressToUpdate);
+
+        Address result = addressService.updateAddress(addressId, addressToUpdate);
+
+        verify(addressRepository).save(addressToUpdate);
+        assertEquals(addressToUpdate, result);
+    }
+
+    @Test
+    @DisplayName("Test updateAddress - Failure - Check User Address failed")
+    void givenExistingAddressAndUserMisMatch_whenUpdatingAddress_thenThrowException() {
+        Long addressId = 1L;
+        User notAuthenticatedUser = new User();
+        notAuthenticatedUser.setId(99L);
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+
+        Address addressFromDb = new Address();
+        addressFromDb.setId(addressId);
+        addressFromDb.setUser(notAuthenticatedUser);
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.findById(addressId)).thenReturn(addressFromDb);
+
+        assertThrows(CheckingUserAddressFailed.class, () -> addressService.updateAddress(addressId, new Address()));
+    }
+
+    @Test
+    void givenAuthenticatedUserWithAddresses_whenFetchingUserAddresses_thenAddressesAreReturned() {
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+        List<Address> addresses = Arrays.asList(new Address(), new Address());
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.findByUserId(authenticatedUser.getId())).thenReturn(addresses);
+
+        List<Address> result = addressService.getUserAddress();
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void givenAuthenticatedUserWithNoAddress_whenFetchingUserAddresses_thenEmptyListIsReturned() {
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.findByUserId(authenticatedUser.getId())).thenReturn(Collections.emptyList());
+
+        List<Address> result = addressService.getUserAddress();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenExistingAddressId_whenDeletingAddressById_thenAddressIsDeleted() {
+        Long addressId = 1L;
+        Address addressToDelete = new Address();
+        addressToDelete.setId(addressId);
+        User authenticatedUser = new User();
+        addressToDelete.setUser(authenticatedUser);
+
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.findById(addressId)).thenReturn(addressToDelete);
+
+        addressService.deleteAddress(addressId);
+
+        verify(addressRepository).deleteById(addressId);
+    }
+
+    @Test
+    void givenExistingAddressAndUserMismatch_whenDeletingAddress_thenThrowException() {
+        Long addressId = 1L;
+        Address addressFromDb = new Address();
+        User unauthenticatedUser = new User();
+        addressFromDb.setUser(unauthenticatedUser);
+        addressFromDb.setId(addressId);
+        User authenticatedUser = new User();
+
+        when(authenticationGateway.getAuthenticatedUser()).thenReturn(authenticatedUser);
+        when(addressRepository.findById(addressId)).thenReturn(addressFromDb);
+
+        assertThrows(CheckingUserAddressFailed.class, () -> addressService.deleteAddress(addressId));
+    }
+
+}

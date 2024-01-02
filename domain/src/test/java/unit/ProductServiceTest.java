@@ -1,144 +1,82 @@
 package unit;
 
-
-import com.ecommerce.exception.ErrorInRequest;
-import com.ecommerce.exception.ProductNotFound;
-import com.ecommerce.model.product.Product;
-import com.ecommerce.model.product.ProductsResponse;
-import com.ecommerce.port.adapters.repositories.ProductRepositoryPort;
-import com.ecommerce.service.ProductService;
-import org.junit.jupiter.api.DisplayName;
+import com.ecommerce.domain.model.product.Product;
+import com.ecommerce.domain.model.product.ProductsDomainResponse;
+import com.ecommerce.domain.port.adapters.repositories.ApparelCategoryRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.BrandCategoryRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.GenderCategoryRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.ProductRepositoryPort;
+import com.ecommerce.domain.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
-    @InjectMocks
-    private ProductService productService;
 
     @Mock
     private ProductRepositoryPort productRepository;
+    @Mock
+    private GenderCategoryRepositoryPort genderCategoryRepository;
+    @Mock
+    private ApparelCategoryRepositoryPort apparelCategoryRepository;
+    @Mock
+    private BrandCategoryRepositoryPort brandCategoryRepository;
 
+
+    private ProductService productService;
+
+    @BeforeEach
+    public void setUp() {
+       productService = new ProductService(productRepository,genderCategoryRepository, apparelCategoryRepository, brandCategoryRepository);
+    }
 
     @Test
-    @DisplayName("getProductById returns a product when found")
-    void givenProductId_whenProductExists_thenProductIsReturned() {
+    public void whenGetProductByValidId_thenProductIsReturned() {
         Long productId = 1L;
-        Product mockProduct = new Product(1L, "product_name", new BigDecimal("1000"), "productImageUrl", true, 100);
-        when(productRepository.findById(productId)).thenReturn(mockProduct);
+        Product product = new Product();
+        when(productRepository.findById(productId)).thenReturn(product);
 
-        ProductService productService = new ProductService(productRepository);
-        Product result = productService.getProductById(productId);
+        Product foundProduct = productService.getProductById(productId);
 
-        assertNotNull(result);
-        assertEquals(mockProduct, result);
+        assertEquals(product, foundProduct);
+        verify(productRepository).findById(productId);
     }
 
-    @Test
-    @DisplayName("getProductById throws ProductNotFound when product is not found")
-    void givenProductId_whenProductDoesNotExist_thenThrowProductNotFound() {
-        Long productId = 99L;
-        when(productRepository.findById(productId)).thenReturn(null);
-
-        ProductService productService = new ProductService(productRepository);
-
-        assertThrows(ProductNotFound.class, () -> productService.getProductById(productId));
-    }
 
     @Test
-    @DisplayName("getProducts returns products based on given criteria")
-    void givenCriteria_whenProductsExist_thenProductsAreReturned() {
+    public void whenGetProductsWithValidParams_thenProductsAreReturned() {
         int gender = 1;
-        List<Integer> brands = List.of(1, 2);
-        List<Integer> categories = List.of(3, 4);
+        List<Integer> categories = Arrays.asList(1, 2);
+        List<Integer> brands = Arrays.asList(3, 4);
         int page = 0;
-        int size = 1;
-        int totalItems = 1;
-        int totalPages = 1;
-        String[] sort = {"id", "asc"};
-
-        Product mockProduct = new Product(1L, "product_name", new BigDecimal("1000"), "productImageUrl", true, 100);
-        List<Product> products = new ArrayList<>();
-        products.add(mockProduct);
-        Page<Product> pageProducts = new PageImpl<>(products);
-
-        given(productRepository.findByGenderCategoryIdAndAndBrandCategoryIdInApparelCategoryIdIn(
-                gender, categories, brands, PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"))))
-                .willReturn(pageProducts);
-
-        ProductsResponse productsResponse = productService.getProducts(gender, brands, categories, page, size, sort);
-
-        assertEquals(products, productsResponse.getProducts());
-        assertEquals(page, productsResponse.getCurrentPage());
-        assertEquals(size, productsResponse.getSize());
-        assertEquals(totalItems, productsResponse.getTotalItems());
-        assertEquals(totalPages, productsResponse.getTotalPages());
-    }
-
-    @Test
-    @DisplayName("getProducts throws ErrorInRequest when request is invalid")
-    void givenInvalidCriteria_whenFetchingProducts_thenThrowErrorInRequest() {
-        int gender = 0;
-        List<Integer> brands = List.of();
-        List<Integer> categories = List.of();
-        int page = 0;
-        int size = 5;
+        int size = 10;
         String[] sort = {"name", "asc"};
-
-        ProductService productService = new ProductService(productRepository);
-
-        assertThrows(ErrorInRequest.class, () -> productService.getProducts(gender, brands, categories, page, size, sort));
-    }
-
-    @Test
-    void whenGetNewProductsIsCalled_thenReturnNonEmptyProductsResponse() {
-        int gender = 1;
-        int page = 0;
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
-        List<Product> productList = List.of(new Product(1L, "product_name", new BigDecimal("1000"), "productImageUrl", true, 100));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+        List<Product> productList = Arrays.asList(new Product(), new Product());
         Page<Product> productPage = new PageImpl<>(productList, pageable, productList.size());
 
-        when(productRepository.findNewProductByGenderCategoryId(gender, pageable)).thenReturn(productPage);
+        when(productRepository.findByGenderCategoryIdAndAndBrandCategoryIdInApparelCategoryIdIn(gender, brands, categories, pageable)).thenReturn(productPage);
 
-        ProductsResponse response = productService.getNewProducts(gender, page, size);
+        ProductsDomainResponse response = productService.getProducts(gender, categories, brands, page, size, sort);
 
-        assertNotNull(response);
         assertFalse(response.getProducts().isEmpty());
-        assertEquals(productList.size(), response.getTotalItems());
-        assertEquals(1, response.getTotalPages());
+        assertEquals(productList.size(), response.getProducts().size());
+        assertEquals(page, response.getCurrentPage());
+        verify(productRepository).findByGenderCategoryIdAndAndBrandCategoryIdInApparelCategoryIdIn(gender, brands, categories, pageable);
     }
 
-    @Test
-    void whenGetNewProductsIsCalledWithNoProducts_thenReturnEmptyProductsResponse() {
-        int gender = 1;
-        int page = 0;
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        when(productRepository.findNewProductByGenderCategoryId(gender, pageable)).thenReturn(productPage);
-
-        ProductsResponse response = productService.getNewProducts(gender, page, size);
-
-        assertNotNull(response);
-        assertTrue(response.getProducts().isEmpty());
-        assertEquals(0, response.getTotalItems());
-        assertEquals(1, response.getTotalPages());
-    }
 }

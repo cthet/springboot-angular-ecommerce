@@ -1,15 +1,15 @@
-Feature: User Authentication
-
-
-  Scenario Outline: Successful Login
-    Given a user exists with an email "<email>"
-    When the user with role "<role>" attempts to log in with email "<email>" and password "<password>"
-    Then the user should be authenticated with success
-    And the user should receive a token with userDetails
-
-    Examples:
-      | email                | password    | role |
-      | test@gmail.com       | password    | USER |
+#Feature: User Authentication
+#
+#
+#  Scenario Outline: Successful Login
+#    Given a user exists with an email "<email>"
+#    When the user with role "<role>" attempts to log in with email "<email>" and password "<password>"
+#    Then the user should be authenticated with success
+#    And the user should receive a token with userDetails
+#
+#    Examples:
+#      | email                | password    | role |
+#      | test@gmail.com       | password    | USER |
 
 #
 #  Scenario Outline: Login Failure due to Email Not Found

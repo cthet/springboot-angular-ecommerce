@@ -1,128 +1,94 @@
-//package unit;
-//
-//import com.ecommerce.springbootecommerce.Exception.ApiRequestException;
-//import com.ecommerce.springbootecommerce.domain.ApparelCategory;
-//import com.ecommerce.springbootecommerce.domain.GenderCategory;
-//import com.ecommerce.springbootecommerce.dto.category.ApparelCategoriesResponse;
-//import com.ecommerce.springbootecommerce.dto.category.ApparelCategoryDto;
-//import com.ecommerce.springbootecommerce.mappers.ApparelCategoryMapper;
-//import com.ecommerce.springbootecommerce.repository.ApparelCategoryRepository;
-//import com.ecommerce.springbootecommerce.repository.GenderCategoryRepository;
-//import com.ecommerce.springbootecommerce.service.Interfaces.ApparelCategoryService;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.mockito.BDDMockito.given;
-//
-////@ExtendWith(SpringExtension.class)
-//@SpringBootTest
-//public class ApparelCategoryServiceTest {
-//
-//    @Autowired
-//    private ApparelCategoryService apparelCategoryService;
-//
-//    @MockBean
-//    private GenderCategoryRepository genderCategoryRepository;
-//
-//    @MockBean
-//    private ApparelCategoryRepository apparelCategoryRepository;
-//
-//    @MockBean
-//    private ApparelCategoryMapper apparelCategoryMapper;
-//
-//
-//    private GenderCategory testGenderCategory;
-//    private ApparelCategory testApparelCategory;
-//    private ApparelCategoryDto testApparelCategoryDto;
-//
-//    private int testGenderId;
-//
-//    @BeforeEach
-//    void setUp() {
-//
-//        testGenderCategory = new GenderCategory();
-//        testGenderCategory.setId(1);
-//        testGenderCategory.setName("male");
-//        testGenderId = 1;
-//
-//        testApparelCategory = new ApparelCategory();
-//        testApparelCategory.setId(1);
-//        testApparelCategory.setName("shirts");
-//
-//        testApparelCategoryDto = new ApparelCategoryDto();
-//        testApparelCategoryDto.setId(testApparelCategory.getId());
-//        testApparelCategoryDto.setName(testApparelCategory.getName());
-//
-//        testGenderCategory.getApparelCategories().add(testApparelCategory);
-//        testApparelCategory.getGenderCategories().add(testGenderCategory);
-//
-//    }
-//
-//
-//    @Test
-//    @DisplayName("Test getApparelCategoriesByBrandIdAndGenderId - Success - Brand is 0")
-//    void testGetApparelCategoriesByBrandIdAndGenderIdSuccessBrandIsZero() {
-//
-//        given(genderCategoryRepository.findById(testGenderId)).willReturn(Optional.of(testGenderCategory));
-//        given(apparelCategoryRepository.findByGenderCategoryIdAndProductsIsNotNull(testGenderId)).willReturn(List.of(testApparelCategory));
-//        given(apparelCategoryMapper.apparelCategoriesToApparelCategoriesDto(List.of(testApparelCategory))).willReturn(List.of(testApparelCategoryDto));
-//
-//        ApparelCategoriesResponse response = apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(testGenderId, 0);
-//
-//        assertEquals( response.getGender(), testGenderCategory.getName());
-//        assertEquals(response.getApparelCategories(), List.of(testApparelCategoryDto));
-//    }
-//
-//    @Test
-//    @DisplayName("Test getApparelCategoriesByBrandIdAndGenderId - Success - Brand is not 0")
-//    void testGetApparelCategoriesByBrandIdAndGenderIdSuccessBrandIsNotZero() {
-//
-//        given(genderCategoryRepository.findById(testGenderId)).willReturn(Optional.of(testGenderCategory));
-//        given(apparelCategoryRepository.findByBrandCategoryIdAndGenderCategoryIdAndProductsIsNotNull(testGenderId, 1)).willReturn(List.of(testApparelCategory));
-//        given(apparelCategoryMapper.apparelCategoriesToApparelCategoriesDto(List.of(testApparelCategory))).willReturn(List.of(testApparelCategoryDto));
-//
-//        ApparelCategoriesResponse response = apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(1, testGenderId);
-//
-//        assertEquals(response.getGender(), testGenderCategory.getName());
-//        assertEquals(response.getApparelCategories(), List.of(testApparelCategoryDto));
-//    }
-//
-//
-//    @Test
-//    @DisplayName("Test getApparelCategoriesByBrandIdAndGenderId - Failure - Gender not found")
-//    void testGetApparelCategoriesByBrandIdAndGenderIdFailureGenderNotFound() {
-//
-//        given(genderCategoryRepository.findById(testGenderId)).willReturn(Optional.empty());
-//
-//        ApiRequestException exception = assertThrows(ApiRequestException.class,
-//                () -> apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(testGenderId, 0));
-//
-//        assertEquals("Gender not found in database!", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-//    }
-//
-//    @Test
-//    @DisplayName("Test getApparelCategoriesByBrandIdAndGenderId - Failure - Apparel Categories not found")
-//    void testGetApparelCategoriesByBrandIdAndGenderIdFailureApparelCategoriesNotFound() {
-//        given(genderCategoryRepository.findById(testGenderId)).willReturn(Optional.of(testGenderCategory));
-//        given(apparelCategoryRepository.findByBrandCategoryIdAndGenderCategoryIdAndProductsIsNotNull(1, testGenderId)).willReturn(Collections.emptyList());
-//
-//        ApiRequestException exception = assertThrows(ApiRequestException.class,
-//                () -> apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(testGenderId, 1));
-//
-//        assertEquals("Apparel Categories not found !", exception.getMessage());
-//        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-//    }
-//}
+package unit;
+
+import com.ecommerce.domain.exception.ApparelCategoriesNotFound;
+import com.ecommerce.domain.model.category.ApparelCategoriesDomainResponse;
+import com.ecommerce.domain.model.category.ApparelCategory;
+import com.ecommerce.domain.model.category.GenderCategory;
+import com.ecommerce.domain.port.adapters.repositories.ApparelCategoryRepositoryPort;
+import com.ecommerce.domain.port.adapters.repositories.GenderCategoryRepositoryPort;
+import com.ecommerce.domain.port.drivers.ApparelCategoryDriverPort;
+import com.ecommerce.domain.service.ApparelCategoryService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class ApparelCategoryServiceTest {
+
+    private ApparelCategoryDriverPort apparelCategoryService;
+
+    @Mock
+    private ApparelCategoryRepositoryPort apparelCategoryRepository;
+
+    @Mock
+    private GenderCategoryRepositoryPort genderCategoryRepository;
+
+
+    @BeforeEach
+    void setup() {
+        apparelCategoryService = new ApparelCategoryService(apparelCategoryRepository, genderCategoryRepository);
+    }
+
+    @Test
+    void givenBrandAndGender_whenGetApparelCategories_thenSuccess() {
+        int genderId = 1;
+        int brandId = 1;
+        GenderCategory genderCategory = new GenderCategory();
+        genderCategory.setName("Men");
+        List<ApparelCategory> apparelCategories = List.of(new ApparelCategory(), new ApparelCategory());
+
+        when(genderCategoryRepository.findById(genderId)).thenReturn(genderCategory);
+        when(apparelCategoryRepository.findByBrandCategoryIdAndGenderCategoryIdAndProductsIsNotNull(brandId, genderId))
+                .thenReturn(apparelCategories);
+
+        ApparelCategoriesDomainResponse response = apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(genderId, brandId);
+
+        assertNotNull(response);
+        assertEquals(genderCategory.getName(), response.getGender());
+        assertEquals(apparelCategories.size(), response.getApparelCategories().size());
+    }
+
+    @Test
+    void givenBrandAndGender_whenNoApparelCategories_thenThrowException() {
+        int genderId = 1;
+        int brandId = 1;
+        GenderCategory genderCategory = new GenderCategory();
+
+        when(genderCategoryRepository.findById(genderId)).thenReturn(genderCategory);
+        when(apparelCategoryRepository.findByBrandCategoryIdAndGenderCategoryIdAndProductsIsNotNull(brandId, genderId))
+                .thenReturn(Collections.emptyList());
+
+        assertThrows(ApparelCategoriesNotFound.class, () -> {
+            apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(genderId, brandId);
+        });
+    }
+
+    @Test
+    void givenGenderAndBrandZero_whenGetApparelCategories_thenSuccess() {
+        int genderId = 1;
+        int brandId = 0;
+        GenderCategory genderCategory = new GenderCategory();
+        List<ApparelCategory> apparelCategories = List.of(new ApparelCategory(), new ApparelCategory());
+
+        when(genderCategoryRepository.findById(genderId)).thenReturn(genderCategory);
+        when(apparelCategoryRepository.findByGenderCategoryIdAndProductsIsNotNull(genderId))
+                .thenReturn(apparelCategories);
+
+        ApparelCategoriesDomainResponse response = apparelCategoryService.getApparelCategoriesByGenderIdAndBranCategoryId(genderId, brandId);
+
+        assertNotNull(response);
+        assertEquals(genderCategory.getName(), response.getGender());
+        assertEquals(apparelCategories.size(), response.getApparelCategories().size());
+    }
+
+
+}
+
