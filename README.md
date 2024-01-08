@@ -51,7 +51,7 @@ In order to run this project, you'll need to have the following installed:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/cthet/spring-boot-angular-ecommerce-app.git
+   git clone https://github.com/cthet/springboot-angular-ecommerce.git
    ```
 
 2. **Build and Launch the Containers**
